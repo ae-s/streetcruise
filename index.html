@@ -1,0 +1,70 @@
+<html>
+  <head>
+<title>Streetview Cruising</title>
+</head>
+<body>
+<h1>Streetview Cruising</h1>
+
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script>
+
+      var map, panorama;
+
+      // what's our preferred direction
+      var lastheading = Math.random() * 360.0;
+
+      // this function ripped almost verbatim from the docs.  including the boring-ass starting place.
+      function initialize() {
+        var fenway = new google.maps.LatLng(42.345573,-71.098326);
+        var mapOptions = {
+          center: fenway,
+          zoom: 14,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(
+            document.getElementById('map_canvas'), mapOptions);
+        var panoramaOptions = {
+          position: fenway,
+          pov: {
+            heading: 34,
+            pitch: 10,
+            zoom: 1
+          }
+        };
+        panorama = new  google.maps.StreetViewPanorama(document.getElementById('pano'),panoramaOptions);
+        map.setStreetView(panorama);
+
+        setInterval(function(){navigate()},10000);
+      }
+
+      // pick a direction and go
+      function navigate() {
+        var links = map.getStreetView().getLinks();
+        var next = links[ 1 ];
+        var dir = panorama.getPov();
+
+        links.forEach( function(el) {
+          // choose direction closest to our preferred heading
+          // fails to account for 360 -> 0 wraparound, whatever
+          if ( Math.abs(el.heading - lastheading) < Math.abs(next.heading - lastheading) ) {
+	    next = el;
+          }
+        } );
+
+	// sit up and face front like a normal passenger ... kids ...
+        dir.heading = next.heading;
+
+	// if we're not going the right direction enoughly, pick a new "right direction"
+        if (Math.abs(dir.heading - lastheading) > 45) { lastheading = Math.random() * 360.0 ; }
+
+        panorama.setPano(next.pano);
+      }
+    </script>
+  </head>
+  <body onload="initialize()">
+    <div id="map_canvas" style="width: 400px; height: 300px"></div>
+    <div id="pano" style="position:absolute; left:410px; top: 8px; width: 800px; height: 600px;"></div>
+
+    <input type="button" onclick="javascript:navigate()" value="take a step" />
+  </body>
+</html>
