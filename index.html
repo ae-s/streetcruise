@@ -15,18 +15,18 @@
 
       // this function ripped almost verbatim from the docs.  including the boring-ass starting place.
       function initialize() {
-        var fenway = new google.maps.LatLng(42.345573,-71.098326);
+        var viewpoint = new google.maps.LatLng(47.646157,-122.333799);
         var mapOptions = {
-          center: fenway,
+          center: viewpoint,
           zoom: 14,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(
             document.getElementById('map_canvas'), mapOptions);
         var panoramaOptions = {
-          position: fenway,
+          position: viewpoint,
           pov: {
-            heading: 34,
+            heading: 180,
             pitch: 10,
             zoom: 1
           }
